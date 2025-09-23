@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EI.iml" filepath="$PROJECT_DIR$/EI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Task1/ObserverPattern/ObserverPattern.iml" filepath="$PROJECT_DIR$/Task1/ObserverPattern/ObserverPattern.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/Task1.iml" filepath="$PROJECT_DIR$/Task1/Task1.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task2/Task2.iml" filepath="$PROJECT_DIR$/Task2/Task2.iml" />
     </modules>
