@@ -1,69 +1,83 @@
 package model;
 
+import sensors.*;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import sensors.observer;
+public class room implements occupancySubject {
 
-public class room {
-    private int id;                  // Room ID
-    private int maxCapacity;         // Max number of people allowed
-    private int occupants;           // Current occupants
-    private List<observer> observers; // Observers: AC, Light, etc.
-
+    private int id;
+    private String name;
+    private int maxCapacity;
+    private boolean occupied;
+    private int occupants;
+    private Map<String, Integer> bookings;
+    private List<occupancyObserver> observers; // observer list
     public room(int id) {
         this.id = id;
+        this.name = "Room " + id; // default name
+        this.bookings = new HashMap<>();
+        this.occupied = false;
+        this.maxCapacity = 0;
         this.occupants = 0;
-        this.maxCapacity = 5; // default
-        observers = new ArrayList<>();
+    }
+    public room(int id, String name) {
+        this.id = id;
+        this.name = name;
+        this.bookings = new HashMap<>();
+        this.occupied = false;
+        this.maxCapacity = 0;
+        this.occupants = 0;
+        this.observers = new ArrayList<>();
     }
 
-    // Getter for ID
-    public int getId() {
-        return id;
+    // getters and setters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public int getOccupants() { return occupants; }
+    public boolean isOccupied() { return occupied; }
+    public void setMaxCapacity(int capacity) { this.maxCapacity = capacity; }
+    public int getMaxCapacity() { return maxCapacity; }
+    public Map<String, Integer> getBookings() { return bookings; }
+
+    public void setOccupants(int occupants) {
+        this.occupants = occupants;
+        this.occupied = occupants >= 2;
+        notifyObservers(); // notify sensors when occupancy changes
     }
 
-    // Getter & Setter for max capacity
-    public int getMaxCapacity() {
-        return maxCapacity;
+    public boolean book(String time, int duration) {
+        if (bookings.containsKey(time)) return false;
+        bookings.put(time, duration);
+        return true;
     }
 
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public boolean cancelBooking(String time) {
+        if (bookings.containsKey(time)) {
+            bookings.remove(time);
+            return true;
+        }
+        return false;
     }
 
-    // Occupancy management
-    public void addOccupants(int count) {
-        this.occupants += count;
-        notifyObservers();
-    }
-
-    public void removeOccupants(int count) {
-        this.occupants -= count;
-        if (this.occupants < 0) this.occupants = 0;
-        notifyObservers();
-    }
-
-    public int getOccupants() {
-        return occupants;
-    }
-
-    // Observer methods
-    public void addObserver(observer observer) {
+    // Observer pattern methods
+    @Override
+    public void addObserver(occupancyObserver observer) {
         observers.add(observer);
     }
 
-    public void removeObserver(observer observer) {
+    @Override
+    public void removeObserver(occupancyObserver observer) {
         observers.remove(observer);
     }
-    // Add this method inside the Room class
-    public boolean isOccupied() {
-        return occupants >= 2;
-    }
 
+    @Override
     public void notifyObservers() {
-        for (observer obs : observers) {
-            obs.update(this);
+        for (occupancyObserver observer : observers) {
+            observer.update(this.id, this.occupied);
         }
     }
 }

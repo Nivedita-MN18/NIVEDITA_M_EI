@@ -29,7 +29,12 @@ public class config {
     public List<room> getRooms() {
         return rooms;
     }
-
+    public void initializeRooms(int count) {
+        rooms.clear();
+        for (int i = 1; i <= count; i++) {
+            rooms.add(new room(i)); // roomId, default occupants=0
+        }
+    }
     public room getRoomById(int id) {
         for (room r : rooms) {
             if (r.getId() == id) return r;

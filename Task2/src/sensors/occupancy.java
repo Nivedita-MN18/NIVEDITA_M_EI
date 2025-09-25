@@ -2,13 +2,13 @@ package sensors;
 
 import model.room;
 
-public class occupancy implements observer {
+public class occupancy implements occupancyObserver {
     @Override
-    public void update(room room) {
-        if (room.isOccupied()) {
-            System.out.println("Room " + room.getId() + " is now occupied.");
+    public void update(boolean occupied, int roomId) {
+        if (occupied) {
+            System.out.println("Room " + roomId + " is now occupied. AC and lights ON.");
         } else {
-            System.out.println("Room " + room.getId() + " is now empty.");
+            System.out.println("Room " + roomId + " is now unoccupied. AC and lights OFF.");
         }
     }
 }
