@@ -3,7 +3,7 @@ import model.room;
 
 public class light implements occupancyObserver {
     @Override
-    public void update(int roomId, boolean occupied) {
+    public void update(boolean occupied,int roomId) {
         if (occupied) {
             System.out.println("Lights in Room " + roomId + " turned ON");
         } else {
