@@ -77,7 +77,7 @@ public class room implements occupancySubject {
     @Override
     public void notifyObservers() {
         for (occupancyObserver observer : observers) {
-            observer.update(this.id, this.occupied);
+            observer.update(this.occupied,this.id);
         }
     }
 }
