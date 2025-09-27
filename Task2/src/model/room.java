@@ -17,12 +17,7 @@ public class room implements occupancySubject {
     private Map<String, Integer> bookings;
     private List<occupancyObserver> observers; // observer list
     public room(int id) {
-        this.id = id;
-        this.name = "Room " + id; // default name
-        this.bookings = new HashMap<>();
-        this.occupied = false;
-        this.maxCapacity = 0;
-        this.occupants = 0;
+        this(id, "Room " + id); // call the main constructor
     }
     public room(int id, String name) {
         this.id = id;
