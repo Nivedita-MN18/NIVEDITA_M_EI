@@ -1,26 +1,37 @@
 package main;
 
-import config.*;
+import config.Config;
 import model.Room;
-import sensors.*;
+import sensors.SensorFactory;
 import booking.*;
 import util.input;
 
 public class Main {
 
     public static void main(String[] args) {
+        // 1️⃣ Initialize office rooms using Config + Builder
         int roomCount = input.getInt("Enter number of rooms");
         Config office = Config.getInstance();
-        office.initializeRooms(roomCount);
+        office.initializeRooms(roomCount); // creates default rooms
 
         System.out.println("Office configured with " + roomCount + " rooms");
 
+        // 2️⃣ Attach observers to each room using SensorFactory
         for (Room r : office.getRooms()) {
-            r.addObserver(new occupancy());
-            r.addObserver(new AC());
-            r.addObserver(new light());
+            r.addObserver(SensorFactory.createSensor("AC"));
+            r.addObserver(SensorFactory.createSensor("Light"));
+            r.addObserver(SensorFactory.createSensor("Occupancy"));
         }
 
+        // Optional: create a specific room using Builder (example)
+        Room room1 = new Room.Builder(1)
+                .setName("Conference Room")
+                .setMaxCapacity(10)
+                .setInitialOccupants(0)
+                .build();
+        office.getRooms().set(0, room1); // replace first room as example
+
+        // 3️⃣ Initialize Booking Manager
         manager bookingManager = new manager();
 
         boolean running = true;
@@ -32,27 +43,41 @@ public class Main {
             System.out.println("4. Exit");
 
             int choice = input.getInt("Choose option");
-
             switch (choice) {
-                case 1:
+                case 1: // Book room
                     int roomId = input.getInt("Room ID");
+                    Room bookRoom = office.getRoomById(roomId);
+                    if (bookRoom == null) {
+                        System.out.println("Invalid Room ID");
+                        break;
+                    }
                     String time = input.getString("Start time (HH:MM)");
                     int duration = input.getInt("Duration (minutes)");
-                    Command book = new Command(office.getRoomById(roomId), time, duration);
+                    Command book = new Command(bookRoom, time, duration);
                     bookingManager.executeCommand(book);
                     break;
 
-                case 2:
+                case 2: // Cancel booking
                     roomId = input.getInt("Room ID");
-                    Cancel c = new Cancel(office.getRoomById(roomId),"09:00");
-                    bookingManager.executeCommand(c);
+                    Room cancelRoom = office.getRoomById(roomId);
+                    if (cancelRoom == null) {
+                        System.out.println("Invalid Room ID");
+                        break;
+                    }
+                    String cancelTime = input.getString("Start time to cancel (HH:MM)");
+                    Cancel cancel = new Cancel(cancelRoom, cancelTime);
+                    bookingManager.executeCommand(cancel);
                     break;
 
-                case 3:
+                case 3: // Add occupants
                     roomId = input.getInt("Room ID");
+                    Room occRoom = office.getRoomById(roomId);
+                    if (occRoom == null) {
+                        System.out.println("Invalid Room ID");
+                        break;
+                    }
                     int occupants = input.getInt("Number of occupants");
-                    Room r = office.getRoomById(roomId);
-                    r.setOccupants(occupants);   // triggers observers automatically
+                    occRoom.setOccupants(occupants);   // triggers observers automatically
                     break;
 
                 case 4: // Exit
