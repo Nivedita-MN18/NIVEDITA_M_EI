@@ -44,7 +44,7 @@ public class Main {
 
                 case 2:
                     roomId = input.getInt("Room ID");
-                    cancel c = new cancel(office.getRoomById(roomId),"09:00");
+                    Cancel c = new Cancel(office.getRoomById(roomId),"09:00");
                     bookingManager.executeCommand(c);
                     break;
 

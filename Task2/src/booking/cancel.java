@@ -1,13 +1,13 @@
 package booking;
 
-import model.room;
+import model.Room;
 
-public class cancel implements BCommand {
+public class Cancel implements BCommand {
 
-    private room r;
+    private Room r;
     private String time;
 
-    public cancel(room r, String time) {
+    public Cancel(Room r, String time) {
         this.r = r;
         this.time = time;
     }

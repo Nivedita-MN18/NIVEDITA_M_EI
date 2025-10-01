@@ -1,7 +1,7 @@
 package sensors;
 
-import model.room;
+import model.Room;
 
 public interface observer {
-    void update(room r);  // called whenever room occupancy changes
+    void update(Room r);  // called whenever room occupancy changes
 }

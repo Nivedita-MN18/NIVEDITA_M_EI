@@ -1,5 +1,5 @@
 package sensors;
-import model.room;
+import model.Room;
 
 public class light implements occupancyObserver {
     @Override
