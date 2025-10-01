@@ -1,4 +1,3 @@
-package model;
 
 public class SpotContext {
     private int spotNumber;
