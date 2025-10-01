@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/Task1/Task1.iml" filepath="$PROJECT_DIR$/Task1/Task1.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task2/Task2.iml" filepath="$PROJECT_DIR$/Task2/Task2.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/builder/builder.iml" filepath="$PROJECT_DIR$/Task1/builder/builder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Task1/chainOfResponsibilty_auth/chainOfResponsibilty_auth.iml" filepath="$PROJECT_DIR$/Task1/chainOfResponsibilty_auth/chainOfResponsibilty_auth.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/decorator/decorator.iml" filepath="$PROJECT_DIR$/Task1/decorator/decorator.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/factory/factory.iml" filepath="$PROJECT_DIR$/Task1/factory/factory.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/flyweight/flyweight.iml" filepath="$PROJECT_DIR$/Task1/flyweight/flyweight.iml" />

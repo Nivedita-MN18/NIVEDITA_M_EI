@@ -9,29 +9,18 @@ import util.input;
 public class Main {
 
     public static void main(String[] args) {
-        // 1️⃣ Initialize office rooms using Config + Builder
         int roomCount = input.getInt("Enter number of rooms");
         Config office = Config.getInstance();
-        office.initializeRooms(roomCount); // creates default rooms
+        office.initializeRooms(roomCount);
 
         System.out.println("Office configured with " + roomCount + " rooms");
 
-        // 2️⃣ Attach observers to each room using SensorFactory
         for (Room r : office.getRooms()) {
             r.addObserver(SensorFactory.createSensor("AC"));
             r.addObserver(SensorFactory.createSensor("Light"));
             r.addObserver(SensorFactory.createSensor("Occupancy"));
         }
 
-        // Optional: create a specific room using Builder (example)
-        Room room1 = new Room.Builder(1)
-                .setName("Conference Room")
-                .setMaxCapacity(10)
-                .setInitialOccupants(0)
-                .build();
-        office.getRooms().set(0, room1); // replace first room as example
-
-        // 3️⃣ Initialize Booking Manager
         manager bookingManager = new manager();
 
         boolean running = true;

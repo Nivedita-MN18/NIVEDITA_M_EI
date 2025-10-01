@@ -19,22 +19,20 @@ public class Config {
         return instance;
     }
 
-    public void setRoomCount(int count) {
-        rooms.clear();
-        for (int i = 1; i <= count; i++) {
-            rooms.add(new Room(i));
-        }
-    }
-
     public List<Room> getRooms() {
         return rooms;
     }
     public void initializeRooms(int count) {
         rooms.clear();
         for (int i = 1; i <= count; i++) {
-            rooms.add(new Room(i)); // roomId, default occupants=0
+            rooms.add(new Room.Builder(i)
+                    .setName("Room " + i)
+                    .setMaxCapacity(5)
+                    .setInitialOccupants(0)
+                    .build());
         }
     }
+
     public Room getRoomById(int id) {
         for (Room r : rooms) {
             if (r.getId() == id) return r;
