@@ -25,7 +25,7 @@ public class Main {
 
         boolean running = true;
         while (running) {
-            System.out.println("\n--- Smart Office Menu ---");
+            System.out.println("\n Smart Office\n");
             System.out.println("1. Book room");
             System.out.println("2. Cancel booking");
             System.out.println("3. Add occupants");
@@ -36,7 +36,7 @@ public class Main {
 
             int choice = input.getInt("Choose option");
             switch (choice) {
-                case 1: // Book room
+                case 1:
                     int roomId = input.getInt("Room ID");
                     Room bookRoom = office.getRoomById(roomId);
                     if (bookRoom == null) {
@@ -49,7 +49,7 @@ public class Main {
                     bookingManager.executeCommand(book);
                     break;
 
-                case 2: // Cancel booking
+                case 2:
                     roomId = input.getInt("Room ID");
                     Room cancelRoom = office.getRoomById(roomId);
                     if (cancelRoom == null) {
@@ -61,7 +61,7 @@ public class Main {
                     bookingManager.executeCommand(cancel);
                     break;
 
-                case 3: // Add occupants
+                case 3:
                     roomId = input.getInt("Room ID");
                     Room occRoom = office.getRoomById(roomId);
                     if (occRoom == null) {
@@ -71,10 +71,10 @@ public class Main {
                     String addTime = input.getString("Booking time (HH:MM) to add occupants to");
 
                     int occupants = input.getInt("Number of occupants");
-                    occRoom.addOccupants(addTime,occupants);   // triggers observers automatically
+                    occRoom.addOccupants(addTime,occupants);
                     break;
 
-                case 4: // Remove occupants
+                case 4:
                     String removeTime = input.getString("Booking time (HH:MM) to remove occupants from");
 
                     roomId = input.getInt("Room ID");
@@ -83,7 +83,7 @@ public class Main {
                     r.removeOccupants(removeTime,leaving);
                     break;
 
-                case 5: // Usage summary
+                case 5:
                     System.out.println("--- Room Usage Summary ---");
                     for (Room room : office.getRooms()) {
                         System.out.println(room.getName() + " | Bookings: " + room.getTotalBookings() +
@@ -91,7 +91,7 @@ public class Main {
                     }
                     break;
 
-                case 6: // Exit
+                case 6:
                     running = false;
                     System.out.println("Exiting Smart Office...");
                     break;
