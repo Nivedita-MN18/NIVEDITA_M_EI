@@ -29,7 +29,10 @@ public class Main {
             System.out.println("1. Book room");
             System.out.println("2. Cancel booking");
             System.out.println("3. Add occupants");
-            System.out.println("4. Exit");
+            System.out.println("4. Remove occupants");
+            System.out.println("5. Room usage summary");
+            System.out.println("6. Exit");
+            Room r;
 
             int choice = input.getInt("Choose option");
             switch (choice) {
@@ -65,11 +68,30 @@ public class Main {
                         System.out.println("Invalid Room ID");
                         break;
                     }
+                    String addTime = input.getString("Booking time (HH:MM) to add occupants to");
+
                     int occupants = input.getInt("Number of occupants");
-                    occRoom.setOccupants(occupants);   // triggers observers automatically
+                    occRoom.addOccupants(addTime,occupants);   // triggers observers automatically
                     break;
 
-                case 4: // Exit
+                case 4: // Remove occupants
+                    String removeTime = input.getString("Booking time (HH:MM) to remove occupants from");
+
+                    roomId = input.getInt("Room ID");
+                    r = office.getRoomById(roomId);
+                    int leaving = input.getInt("Number of occupants leaving");
+                    r.removeOccupants(removeTime,leaving);
+                    break;
+
+                case 5: // Usage summary
+                    System.out.println("--- Room Usage Summary ---");
+                    for (Room room : office.getRooms()) {
+                        System.out.println(room.getName() + " | Bookings: " + room.getTotalBookings() +
+                                " | Occupied minutes: " + room.getTotalOccupiedMinutes());
+                    }
+                    break;
+
+                case 6: // Exit
                     running = false;
                     System.out.println("Exiting Smart Office...");
                     break;

@@ -1,5 +1,6 @@
 package model;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Room implements occupancySubject {
     private int id;
@@ -17,17 +21,39 @@ public class Room implements occupancySubject {
     private int maxCapacity;
     private int occupants;
     private boolean occupied;
-    private Map<String, Integer> bookings;
+    private Map<String, BookingInfo> bookings;
     private List<occupancyObserver> observers;
-
+    private int totalBookings;
+    private int totalOccupiedMinutes;
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    public Room(int id, String name, int maxCapacity) {
+        this.id = id;
+        this.name = name;
+        this.maxCapacity = maxCapacity;
+        this.occupied = false;
+        this.occupants = 0;
+        this.bookings = new HashMap<>();
+        this.observers = new ArrayList<>();
+        this.totalBookings = 0;
+        this.totalOccupiedMinutes = 0;
+    }
     public Room(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.maxCapacity = builder.maxCapacity;
-        this.occupants = builder.occupants;
+        this.occupants = builder.initialOccupants;
         this.occupied = this.occupants > 0;
         this.bookings = new HashMap<>();
         this.observers = new ArrayList<>();
+    }
+    class BookingInfo {
+        int duration;
+        int occupants;
+
+        public BookingInfo(int duration) {
+            this.duration = duration;
+            this.occupants = 0; // initially 0
+        }
     }
 
     // Builder class
@@ -35,16 +61,19 @@ public class Room implements occupancySubject {
         private int id;
         private String name = "Room"; // default
         private int maxCapacity = 5;  // default
-        private int occupants = 0;    // default
+        private int initialOccupants  = 0;    // default
 
         public Builder(int id) { this.id = id; }
 
         public Builder setName(String name) { this.name = name; return this; }
         public Builder setMaxCapacity(int maxCapacity) { this.maxCapacity = maxCapacity; return this; }
-        public Builder setInitialOccupants(int occupants) { this.occupants = occupants; return this; }
+        public Builder setInitialOccupants(int occupants) { this.initialOccupants  = occupants; return this; }
 
-        public Room build() { return new Room(this); }
-    }
+        public Room build() {
+            Room r = new Room(id, name, maxCapacity);
+//            r.addOccupants();
+            return r;
+        }    }
 
     @Override
     public void addObserver(occupancyObserver observer) { observers.add(observer); }
@@ -59,26 +88,71 @@ public class Room implements occupancySubject {
 
     // getters & setters
     public int getId() { return id; }
+    public int getTotalBookings() { return totalBookings; }
+    public int getTotalOccupiedMinutes() { return totalOccupiedMinutes; }
+
     public String getName() { return name; }
     public int getMaxCapacity() { return maxCapacity; }
     public int getOccupants() { return occupants; }
     public boolean isOccupied() { return occupied; }
+    public void addOccupants(String time, int newOccupants) {
+        BookingInfo booking = bookings.get(time);
+        if (booking == null) {
+            System.out.println("No booking exists at " + time);
+            return;
+        }
+
+        if (booking.occupants + newOccupants > maxCapacity) {
+            System.out.println("Cannot add " + newOccupants + " occupants. Max capacity: " + maxCapacity);
+            return;
+        }
+
+        booking.occupants += newOccupants;
+        updateOccupied();
+    }
+
+    public void removeOccupants(String time, int leaving) {
+        BookingInfo booking = bookings.get(time);
+        if (booking == null || leaving > booking.occupants) {
+            System.out.println("Invalid occupants removal for time " + time);
+            return;
+        }
+
+        booking.occupants -= leaving;
+        updateOccupied();
+    }
+
+
+    private void updateOccupied() {
+        boolean anyOccupied = false;
+        for (BookingInfo b : bookings.values()) {
+            if (b.occupants >= 2) {
+                anyOccupied = true;
+                break;
+            }
+        }
+        occupied = anyOccupied;
+        notifyObservers();
+    }
+
 
     public boolean book(String time, int duration) {
+        // Validate duration
         if (duration <= 0) {
             System.out.println("Invalid duration. Must be > 0.");
             return false;
         }
 
-        // Validate time format and office hours (09:00 - 18:00)
+        // Validate time
         LocalTime startTime;
         try {
-            startTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+            startTime = LocalTime.parse(time, TIME_FORMAT);
         } catch (DateTimeParseException e) {
             System.out.println("Invalid time format. Use HH:mm.");
             return false;
         }
 
+        // Check office hours
         LocalTime officeStart = LocalTime.of(9, 0);
         LocalTime officeEnd = LocalTime.of(18, 0);
         LocalTime endTime = startTime.plusMinutes(duration);
@@ -87,60 +161,54 @@ public class Room implements occupancySubject {
             return false;
         }
 
-        // Check for overlapping bookings
-        for (Map.Entry<String, Integer> booking : bookings.entrySet()) {
-            LocalTime bookedStart = LocalTime.parse(booking.getKey(), DateTimeFormatter.ofPattern("HH:mm"));
-            LocalTime bookedEnd = bookedStart.plusMinutes(booking.getValue());
-            if ((startTime.isBefore(bookedEnd) && endTime.isAfter(bookedStart))) {
+        // Check overlaps
+        for (Map.Entry<String, BookingInfo> booking : bookings.entrySet()) {
+            LocalTime bookedStart = LocalTime.parse(booking.getKey(), TIME_FORMAT);
+            LocalTime bookedEnd = bookedStart.plusMinutes(booking.getValue().duration);
+            if (startTime.isBefore(bookedEnd) && endTime.isAfter(bookedStart)) {
                 System.out.println("Time slot overlaps with existing booking: " + booking.getKey());
                 return false;
             }
         }
 
-        // Check occupancy limit
+        // Check capacity
         if (occupants >= maxCapacity) {
-            System.out.println("Cannot book. Room at max capacity.");
+            System.out.println("Cannot book. Room at full capacity (" + maxCapacity + ").");
             return false;
         }
 
-        // Add booking
-        bookings.put(time, duration);
-        System.out.println(name + " booked at " + time + " for " + duration + " mins.");
+        bookings.put(time, new BookingInfo(duration));
+        totalBookings++;
+
+        // Start auto-release timer
+        scheduleAutoRelease(time, duration);
+
         return true;
     }
 
     public boolean cancelBooking(String time) {
-        // Validate time format
-        try {
-            LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid time format. Use HH:mm.");
-            return false;
-        }
-
         if (bookings.containsKey(time)) {
             bookings.remove(time);
             System.out.println("Booking for " + name + " at " + time + " cancelled.");
             return true;
-        } else {
-            System.out.println("No booking found for " + name + " at " + time);
-            return false;
         }
+        return false;
     }
 
-    // ---------------- Occupancy Methods ----------------
-    public void setOccupants(int occupants) {
-        if (occupants < 0) {
-            System.out.println("Occupants cannot be negative.");
-            return;
-        }
-        if (occupants > maxCapacity) {
-            System.out.println("Occupants exceed max capacity (" + maxCapacity + ").");
-            return;
-        }
-        this.occupants = occupants;
-        this.occupied = occupants > 0;
-        notifyObservers();
+    // Auto-release bookings if not occupied within 5 minutes
+    private void scheduleAutoRelease(String time, int duration) {
+        LocalTime bookingTime = LocalTime.parse(time, TIME_FORMAT);
+        long delay = Duration.between(LocalTime.now(), bookingTime.plusMinutes(5)).toMillis();
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(() -> {
+            if (!occupied && bookings.containsKey(time)) {
+                bookings.remove(time);
+                System.out.println("Booking at " + time + " for " + name + " auto-released (room not occupied).");
+            }
+        }, Math.max(delay, 0), TimeUnit.MILLISECONDS);
     }
+
+
 
 }
