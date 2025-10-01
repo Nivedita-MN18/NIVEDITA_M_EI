@@ -1,8 +1,8 @@
 package sensors;
 
-import model.room;
+import model.Room;
 
-public class ac implements occupancyObserver {
+public class AC implements occupancyObserver {
     @Override
     public void update(boolean occupied,int roomId) {
         if (occupied) {

@@ -2,35 +2,33 @@ package PizzaTracker.observers;
 
 import PizzaTracker.interfaces.observer;
 
-/**
- * Kitchen display system that shows order status to kitchen staff.
- * Implements Observer interface to receive order updates.
- */
 public class kitchen implements observer {
+    private String name;
 
-    private String displayName;
-
-    public kitchen(String displayName) { this.displayName = displayName; }
+    public kitchen(String name) { 
+        this.name = name; 
+    }
 
     @Override
-    public void update(String orderId, String status, String message) {
-        switch (status) {
-            case "PLACED":
-                displayKitchenMessage(orderId, "NEW ORDER RECEIVED - Start preparation");
-                break;
-            case "COOKING":
-                displayKitchenMessage(orderId, "IN PREPARATION - " + message);
-                break;
-            case "READY":
-                displayKitchenMessage(orderId, "READY FOR PICKUP");
-                break;
-            case "OUT_FOR_DELIVERY":
-                displayKitchenMessage(orderId, "OUT FOR DELIVERY");
-                break;
+    public void update(String orderId, String status, String details) {
+        String message = getKitchenMessage(orderId, status, details);
+        if (message != null) {
+            System.out.println("\n👨‍🍳 [" + name + "] " + message);
         }
     }
 
-    private void displayKitchenMessage(String orderId, String displayMessage) {
-        System.out.println("[" + displayName + "] Order #" + orderId + ": " + displayMessage);
+    private String getKitchenMessage(String orderId, String status, String details) {
+        switch (status) {
+            case "PLACED":
+                return "New order #" + orderId + ": " + details;
+            case "PREPARING":
+                return "Preparing order #" + orderId;
+            case "IN_OVEN":
+                return "Baking order #" + orderId;
+            case "READY":
+                return "Order #" + orderId + " is ready!";
+            default:
+                return null;
+        }
     }
 }

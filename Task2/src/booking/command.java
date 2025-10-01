@@ -1,19 +1,19 @@
 package booking;
 
-import model.room;
+import model.Room;
 
-public class command implements BCommand {
-
-    private room r;
+public class Command implements BCommand {
+    private Room r;
     private String time;
     private int duration;
 
-    public command(room r, String time, int duration) {
+    public Command(Room r, String time, int duration) {
         this.r = r;
         this.time = time;
         this.duration = duration;
     }
-@Override
+
+    @Override
     public void execute() {
         boolean success = r.book(time, duration);
         if (success) {

@@ -1,7 +1,7 @@
 package main;
 
 import config.*;
-import model.room;
+import model.Room;
 import sensors.*;
 import booking.*;
 import util.input;
@@ -10,14 +10,14 @@ public class Main {
 
     public static void main(String[] args) {
         int roomCount = input.getInt("Enter number of rooms");
-        config office = config.getInstance();
+        Config office = Config.getInstance();
         office.initializeRooms(roomCount);
 
         System.out.println("Office configured with " + roomCount + " rooms");
 
-        for (room r : office.getRooms()) {
+        for (Room r : office.getRooms()) {
             r.addObserver(new occupancy());
-            r.addObserver(new ac());
+            r.addObserver(new AC());
             r.addObserver(new light());
         }
 
@@ -38,7 +38,7 @@ public class Main {
                     int roomId = input.getInt("Room ID");
                     String time = input.getString("Start time (HH:MM)");
                     int duration = input.getInt("Duration (minutes)");
-                    command book = new command(office.getRoomById(roomId), time, duration);
+                    Command book = new Command(office.getRoomById(roomId), time, duration);
                     bookingManager.executeCommand(book);
                     break;
 
@@ -51,7 +51,7 @@ public class Main {
                 case 3:
                     roomId = input.getInt("Room ID");
                     int occupants = input.getInt("Number of occupants");
-                    room r = office.getRoomById(roomId);
+                    Room r = office.getRoomById(roomId);
                     r.setOccupants(occupants);   // triggers observers automatically
                     break;
 

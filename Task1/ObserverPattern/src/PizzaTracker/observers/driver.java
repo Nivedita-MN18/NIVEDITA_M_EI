@@ -1,29 +1,32 @@
 package PizzaTracker.observers;
 
 import PizzaTracker.interfaces.observer;
+
 public class driver implements observer {
+    private String name;
 
-    private String driverName;
-
-    public driver(String driverName) {
-        this.driverName = driverName;
+    public driver(String name) {
+        this.name = name;
     }
 
     @Override
-    public void update(String orderId, String status, String message) {
-        if ("READY".equals(status)) {
-            assignDelivery(orderId, message);
-        } else if ("DELIVERED".equals(status)) {
-            completeDelivery(orderId);
+    public void update(String orderId, String status, String details) {
+        String message = getDriverMessage(orderId, status, details);
+        if (message != null) {
+            System.out.println("\n🚗 [" + name + "'s App] " + message);
         }
     }
 
-    private void assignDelivery(String orderId, String message) {
-        System.out.println("[Driver App - " + driverName + "] NEW DELIVERY ASSIGNED: Order #" +
-                orderId + " - " + message);
-    }
-
-    private void completeDelivery(String orderId) {
-        System.out.println("[Driver App - " + driverName + "] DELIVERY COMPLETED: Order #" + orderId);
+    private String getDriverMessage(String orderId, String status, String details) {
+        switch (status) {
+            case "READY":
+                return "Order #" + orderId + " ready for delivery!";
+            case "OUT_FOR_DELIVERY":
+                return "Delivering order #" + orderId + " now!";
+            case "DELIVERED":
+                return "Successfully delivered order #" + orderId;
+            default:
+                return null;
+        }
     }
 }

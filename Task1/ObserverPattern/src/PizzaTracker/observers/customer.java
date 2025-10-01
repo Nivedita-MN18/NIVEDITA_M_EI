@@ -2,42 +2,35 @@ package PizzaTracker.observers;
 
 import PizzaTracker.interfaces.observer;
 
-/**
- * SMS notification service for sending order updates to customers.
- * Implements Observer interface to receive order status changes.
- */
 public class customer implements observer {
+    private String phone;
 
-    private String customerPhone;
-
-    public customer(String customerPhone) {
-        this.customerPhone = customerPhone;
+    public customer(String phone) {
+        this.phone = phone;
     }
 
     @Override
-    public void update(String orderId, String status, String message) {
-        String smsText = generateSMSText(orderId, status, message);
-        sendSMS(customerPhone, smsText);
+    public void update(String orderId, String status, String details) {
+        String message = getMessage(orderId, status, details);
+        System.out.println("\n📱 SMS to " + phone + ": " + message);
     }
 
-    private String generateSMSText(String orderId, String status, String message) {
+    private String getMessage(String orderId, String status, String details) {
         switch (status) {
             case "PLACED":
-                return "Your order #" + orderId + " has been confirmed. We will notify you when it's ready.";
-            case "COOKING":
-                return "Your order #" + orderId + " is being prepared. " + message;
+                return "Order #" + orderId + " received! " + details;
+            case "PREPARING":
+                return "Your pizza is being prepared now!";
+            case "IN_OVEN":
+                return "Your pizza is in the oven! 🍕";
             case "READY":
-                return "Your order #" + orderId + " is ready for pickup!";
+                return "Your order is ready for pickup!";
             case "OUT_FOR_DELIVERY":
-                return "Your order #" + orderId + " is out for delivery. Expected time: " + message;
+                return "Your driver is on the way with your order!";
             case "DELIVERED":
-                return "Your order #" + orderId + " has been delivered. Thank you!";
+                return "Order delivered! " + details;
             default:
-                return "Order #" + orderId + " status: " + status;
+                return "Order update: " + status;
         }
-    }
-
-    private void sendSMS(String phoneNumber, String text) {
-        System.out.println("[SMS to " + phoneNumber + "] " + text);
     }
 }
