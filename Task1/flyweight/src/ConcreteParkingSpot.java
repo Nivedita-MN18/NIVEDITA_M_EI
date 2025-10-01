@@ -1,6 +1,5 @@
-import model.SpotContext;
 
-public class ConcreteParkingSpot implements flyweight.ParkingSpot {
+public class ConcreteParkingSpot implements ParkingSpot {
 
     private final String type;      // intrinsic state
     private final double rate;

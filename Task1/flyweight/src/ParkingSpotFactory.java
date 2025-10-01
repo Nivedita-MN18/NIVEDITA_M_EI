@@ -4,9 +4,9 @@ import java.util.Map;
 
 public class ParkingSpotFactory {
 
-    private static final Map<String, flyweight.ParkingSpot> spotMap = new HashMap<>();
+    private static final Map<String, ParkingSpot> spotMap = new HashMap<>();
 
-    public static flyweight.ParkingSpot getParkingSpot(String type, double rate) {
+    public static ParkingSpot getParkingSpot(String type, double rate) {
         String key = type + "-" + rate;
         if (!spotMap.containsKey(key)) {
             spotMap.put(key, new ConcreteParkingSpot(type, rate));
