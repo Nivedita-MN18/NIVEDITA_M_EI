@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class room implements occupancySubject {
+public class Room implements occupancySubject {
 
     private int id;
     private String name;
@@ -16,10 +16,10 @@ public class room implements occupancySubject {
     private int occupants;
     private Map<String, Integer> bookings;
     private List<occupancyObserver> observers; // observer list
-    public room(int id) {
+    public Room(int id) {
         this(id, "Room " + id); // call the main constructor
     }
-    public room(int id, String name) {
+    public Room(int id, String name) {
         this.id = id;
         this.name = name;
         this.bookings = new HashMap<>();
