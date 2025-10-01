@@ -11,7 +11,6 @@
       <module fileurl="file://$PROJECT_DIR$/Task1/decorator/decorator.iml" filepath="$PROJECT_DIR$/Task1/decorator/decorator.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/flyweight/flyweight.iml" filepath="$PROJECT_DIR$/Task1/flyweight/flyweight.iml" />
       <module fileurl="file://$PROJECT_DIR$/Task1/strategy_pattern_rideapp/strategy_pattern_rideapp.iml" filepath="$PROJECT_DIR$/Task1/strategy_pattern_rideapp/strategy_pattern_rideapp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Task1/template/template.iml" filepath="$PROJECT_DIR$/Task1/template/template.iml" />
     </modules>
   </component>
 </project>
