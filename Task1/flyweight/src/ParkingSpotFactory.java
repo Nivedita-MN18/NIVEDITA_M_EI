@@ -13,4 +13,7 @@ public class ParkingSpotFactory {
         }
         return spotMap.get(key);
     }
+    public static int getTotalSpotsCreated() {
+        return spotMap.size();
+    }
 }

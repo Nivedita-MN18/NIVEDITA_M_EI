@@ -12,7 +12,7 @@ public class customer implements observer {
     @Override
     public void update(String orderId, String status, String details) {
         String message = getMessage(orderId, status, details);
-        System.out.println("\n📱 SMS to " + phone + ": " + message);
+        System.out.println("\nSMS to " + phone + ": " + message);
     }
 
     private String getMessage(String orderId, String status, String details) {
@@ -22,7 +22,7 @@ public class customer implements observer {
             case "PREPARING":
                 return "Your pizza is being prepared now!";
             case "IN_OVEN":
-                return "Your pizza is in the oven! 🍕";
+                return "Your pizza is in the oven!";
             case "READY":
                 return "Your order is ready for pickup!";
             case "OUT_FOR_DELIVERY":

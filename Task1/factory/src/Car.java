@@ -1,6 +1,13 @@
-public class Car implements Transport {
+
+public class Car implements Vehicle {
     @Override
-    public void bookRide() {
-        System.out.println("Car ride booked");
-    }
+    public void start() { System.out.println("Car started"); }
+
+    @Override
+    public void stop() { System.out.println("Car stopped"); }
+
+    @Override
+    public String getType() { return "Car"; }
 }
+
+

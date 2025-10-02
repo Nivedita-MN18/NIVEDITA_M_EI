@@ -13,7 +13,7 @@ public class kitchen implements observer {
     public void update(String orderId, String status, String details) {
         String message = getKitchenMessage(orderId, status, details);
         if (message != null) {
-            System.out.println("\n👨‍🍳 [" + name + "] " + message);
+            System.out.println("\n[" + name + "] " + message);
         }
     }
 

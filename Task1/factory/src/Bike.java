@@ -1,6 +1,12 @@
-public class Bike implements Transport {
+public class Bike implements Vehicle {
     @Override
-    public void bookRide() {
-        System.out.println("Bike ride booked");
-    }
+    public void start() { System.out.println("Bike started"); }
+
+    @Override
+    public void stop() { System.out.println("Bike stopped"); }
+
+    @Override
+    public String getType() { return "Bike"; }
 }
+
+

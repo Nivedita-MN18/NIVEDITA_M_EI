@@ -1,4 +1,6 @@
-// CoffeeDecorator.java
+package coffee;
+
+// coffee.CoffeeDecorator.java
 public abstract class CoffeeDecorator implements Coffee {
     protected Coffee decoratedCoffee;
 

@@ -6,31 +6,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class pizza implements subject {
-    private String orderId;
+    private final String orderId;
+    private final List<String> pizzas;
+    private final List<observer> observers;
     private String status;
-    private List<observer> observers;
 
-    public pizza(String orderId) {
+    public pizza(String orderId, List<String> pizzas) {
         this.orderId = orderId;
-        this.status = "PLACED";
+        this.pizzas = pizzas;
         this.observers = new ArrayList<>();
+        this.status = "PLACED";
     }
 
     @Override
-    public void registerObserver(observer ob) { 
-        if (!observers.contains(ob)) {
-            observers.add(ob);
-        }
+    public void registerObserver(observer ob) {
+        if (!observers.contains(ob)) observers.add(ob);
     }
 
     @Override
-    public void removeObserver(observer ob) { 
+    public void removeObserver(observer ob) {
         observers.remove(ob);
     }
 
     @Override
-    public void notifyObservers() { 
-        notifyObservers(""); 
+    public void notifyObservers() {
+        notifyObservers("");
+    }
+
+    public void updateStatus(String newStatus, String details) {
+        this.status = newStatus;
+        System.out.println("\n[System] Order " + orderId + " status: " + newStatus);
+        if (!details.isBlank()) System.out.println("Details: " + details);
+        notifyObservers(details);
     }
 
     private void notifyObservers(String details) {
@@ -39,12 +46,6 @@ public class pizza implements subject {
         }
     }
 
-    public void updateStatus(String newStatus, String details) {
-        this.status = newStatus;
-        System.out.println("\n[System] Order " + orderId + " status: " + newStatus);
-        if (details != null && !details.isEmpty()) {
-            System.out.println("Details: " + details);
-        }
-        notifyObservers(details);
-    }
+    public List<String> getPizzas() { return pizzas; }
+    public String getOrderId() { return orderId; }
 }

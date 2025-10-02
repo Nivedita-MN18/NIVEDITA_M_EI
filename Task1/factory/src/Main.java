@@ -1,16 +1,53 @@
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        Transport t1 = Factory.getTransport("car");
-        t1.bookRide();
+        Scanner sc = new Scanner(System.in);
+        boolean running = true;
 
-        Transport t2 = Factory.getTransport("bike");
-        t2.bookRide();
+        System.out.println("=== Vehicle Factory ===");
 
-        Transport t3 = Factory.getTransport("bus");
-        t3.bookRide();
+        while (running) {
+            System.out.println("\nChoose vehicle to create:");
+            System.out.println("1. Car");
+            System.out.println("2. Bike");
+            System.out.println("3. Truck");
+            System.out.println("4. Exit");
+            System.out.print("Enter choice: ");
 
-        Factory.registerTransport("scooter", () -> () -> System.out.println("Scooter ride booked 🛵"));
-        Transport t4 = Factory.getTransport("scooter");
-        t4.bookRide();
+            if (!sc.hasNextInt()) {
+                System.out.println("Invalid input! Enter a number.");
+                sc.next();
+                continue;
+            }
+
+            int choice = sc.nextInt();
+            Vehicle vehicle = null;
+
+            switch (choice) {
+                case 1 -> vehicle = Factory.createVehicle("car");
+                case 2 -> vehicle = Factory.createVehicle("bike");
+                case 3 -> vehicle = Factory.createVehicle("truck");
+                case 4 -> {
+                    running = false;
+                    continue;
+                }
+                default -> {
+                    System.out.println("Invalid choice! Try again.");
+                    continue;
+                }
+            }
+
+            if (vehicle != null) {
+                System.out.println("\nCreated a " + vehicle.getType());
+                vehicle.start();
+                vehicle.stop();
+            } else {
+                System.out.println("Vehicle creation failed!");
+            }
+        }
+
+        System.out.println("Exiting Vehicle Factory...");
+        sc.close();
     }
 }

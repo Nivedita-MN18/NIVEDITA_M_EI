@@ -13,7 +13,7 @@ public class driver implements observer {
     public void update(String orderId, String status, String details) {
         String message = getDriverMessage(orderId, status, details);
         if (message != null) {
-            System.out.println("\n🚗 [" + name + "'s App] " + message);
+            System.out.println("\n[" + name + "'s App] " + message);
         }
     }
 
