@@ -1,0 +1,76 @@
+@startuml
+
+class Room {
+    - int id
+    - String name
+    - int maxCapacity
+    - int currentOccupants
+    - boolean occupied
+    - List<occupancyObserver> observers
+    - Map<String, Booking> bookings
+    - Timer autoReleaseTimer
+    + int getId()
+    + String getName()
+    + int getMaxCapacity()
+    + int getCurrentOccupants()
+    + boolean isOccupied()
+    + int getTotalBookings()
+    + int getTotalOccupiedMinutes()
+    + void addObserver(occupancyObserver)
+    + void removeObserver(occupancyObserver)
+    + boolean book(String, int)
+    + boolean cancelBooking(String)
+    + boolean addOccupants(String, int)
+    + boolean removeOccupants(String, int)
+}
+
+class Room_Builder {
+    - int id
+    - String name
+    - int maxCapacity
+    - int initialOccupants
+    + Builder(int)
+    + Builder setName(String)
+    + Builder setMaxCapacity(int)
+    + Builder setInitialOccupants(int)
+    + Room build()
+}
+
+class Booking {
+    - LocalTime start
+    - int duration
+    + LocalTime getStart()
+    + LocalTime getEnd()
+    + int getDuration()
+}
+
+interface occupancyObserver {
+    + void update(boolean, int)
+}
+
+class AC
+class Light
+class Occupancy
+
+interface BCommand {
+    + void execute()
+}
+
+class Command
+class Cancel
+class Manager {
+    + void executeCommand(BCommand)
+}
+
+' Relationships
+Room "1" *-- "0..*" Booking
+Room o-- "0..*" occupancyObserver
+Room --> Room_Builder : uses
+occupancyObserver <|.. AC
+occupancyObserver <|.. Light
+occupancyObserver <|.. Occupancy
+BCommand <|.. Command
+BCommand <|.. Cancel
+Manager --> BCommand : executes
+
+@enduml

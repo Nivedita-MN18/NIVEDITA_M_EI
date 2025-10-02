@@ -7,13 +7,15 @@ import booking.*;
 import util.input;
 
 public class Main {
-
     public static void main(String[] args) {
-        int roomCount = input.getInt("Enter number of rooms");
         Config office = Config.getInstance();
-        office.initializeRooms(roomCount);
-
-        System.out.println("Office configured with " + roomCount + " rooms");
+        int roomCount = input.getInt("Enter number of rooms");
+        int maxCapacity = input.getInt("Enter max capacity per room");
+        if(maxCapacity <= 0) {
+            System.out.println("Invalid capacity. Enter a positive number.");
+            return;
+        }
+        office.initializeRooms(roomCount, maxCapacity);
 
         for (Room r : office.getRooms()) {
             r.addObserver(SensorFactory.createSensor("AC"));
@@ -21,84 +23,60 @@ public class Main {
             r.addObserver(SensorFactory.createSensor("Occupancy"));
         }
 
-        manager bookingManager = new manager();
-
+        manager manager_obj = new manager();
         boolean running = true;
+
         while (running) {
-            System.out.println("\n Smart Office\n");
+            System.out.println("\n--- Smart Office Menu ---");
             System.out.println("1. Book room");
             System.out.println("2. Cancel booking");
             System.out.println("3. Add occupants");
             System.out.println("4. Remove occupants");
             System.out.println("5. Room usage summary");
             System.out.println("6. Exit");
-            Room r;
 
             int choice = input.getInt("Choose option");
-            switch (choice) {
-                case 1:
-                    int roomId = input.getInt("Room ID");
-                    Room bookRoom = office.getRoomById(roomId);
-                    if (bookRoom == null) {
-                        System.out.println("Invalid Room ID");
-                        break;
+            switch(choice) {
+                case 1 -> {
+                    Room r = getRoom(office); if(r==null) break;
+                    String time = input.getString("Booking time (HH:MM)");
+                    int dur = input.getInt("Duration in minutes");
+                    manager_obj.executeCommand(new Command(r,time,dur));
+                }
+                case 2 -> {
+                    Room r = getRoom(office); if(r==null) break;
+                    String time = input.getString("Booking time (HH:MM)");
+                    manager_obj.executeCommand(new Cancel(r,time));
+                }
+                case 3 -> {
+                    Room r = getRoom(office); if(r==null) break;
+                    String time = input.getString("Booking time (HH:MM)");
+                    int num = input.getInt("Number of occupants to add");
+                    r.addOccupants(time,num);
+                }
+                case 4 -> {
+                    Room r = getRoom(office); if(r==null) break;
+                    String time = input.getString("Booking time (HH:MM)");
+                    int num = input.getInt("Number of occupants to remove");
+                    r.removeOccupants(time,num);
+                }
+                case 5 -> {
+                    System.out.println("Room Usage Summary");
+                    for(Room r: office.getRooms()) {
+                        System.out.println(r.getName() + " | Bookings: " + r.getTotalBookings() +
+                                " | Occupied mins: " + r.getTotalOccupiedMinutes());
                     }
-                    String time = input.getString("Start time (HH:MM)");
-                    int duration = input.getInt("Duration (minutes)");
-                    Command book = new Command(bookRoom, time, duration);
-                    bookingManager.executeCommand(book);
-                    break;
-
-                case 2:
-                    roomId = input.getInt("Room ID");
-                    Room cancelRoom = office.getRoomById(roomId);
-                    if (cancelRoom == null) {
-                        System.out.println("Invalid Room ID");
-                        break;
-                    }
-                    String cancelTime = input.getString("Start time to cancel (HH:MM)");
-                    Cancel cancel = new Cancel(cancelRoom, cancelTime);
-                    bookingManager.executeCommand(cancel);
-                    break;
-
-                case 3:
-                    roomId = input.getInt("Room ID");
-                    Room occRoom = office.getRoomById(roomId);
-                    if (occRoom == null) {
-                        System.out.println("Invalid Room ID");
-                        break;
-                    }
-                    String addTime = input.getString("Booking time (HH:MM) to add occupants to");
-
-                    int occupants = input.getInt("Number of occupants");
-                    occRoom.addOccupants(addTime,occupants);
-                    break;
-
-                case 4:
-                    String removeTime = input.getString("Booking time (HH:MM) to remove occupants from");
-
-                    roomId = input.getInt("Room ID");
-                    r = office.getRoomById(roomId);
-                    int leaving = input.getInt("Number of occupants leaving");
-                    r.removeOccupants(removeTime,leaving);
-                    break;
-
-                case 5:
-                    System.out.println("--- Room Usage Summary ---");
-                    for (Room room : office.getRooms()) {
-                        System.out.println(room.getName() + " | Bookings: " + room.getTotalBookings() +
-                                " | Occupied minutes: " + room.getTotalOccupiedMinutes());
-                    }
-                    break;
-
-                case 6:
-                    running = false;
-                    System.out.println("Exiting Smart Office...");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice");
+                }
+                case 6 -> { running = false; System.out.println("Exiting..."); }
+                default -> System.out.println("Invalid choice");
             }
         }
+    }
+
+    private static Room getRoom(Config office) {
+        int roomId = input.getInt("Room ID");
+        Room r = office.getRoomById(roomId);
+        if(r==null) System.out.println("Invalid Room ID");
+        return r;
     }
 }
