@@ -22,21 +22,22 @@ public class Config {
     public List<Room> getRooms() {
         return rooms;
     }
-    public void initializeRooms(int count) {
+
+    public void initializeRooms(int count, int maxCapacity) {
         rooms.clear();
         for (int i = 1; i <= count; i++) {
             rooms.add(new Room.Builder(i)
                     .setName("Room " + i)
-                    .setMaxCapacity(5)
+                    .setMaxCapacity(maxCapacity)
                     .setInitialOccupants(0)
                     .build());
         }
     }
 
     public Room getRoomById(int id) {
-        for (Room r : rooms) {
-            if (r.getId() == id) return r;
-        }
-        return null;
+        return rooms.stream()
+                .filter(r -> r.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }
