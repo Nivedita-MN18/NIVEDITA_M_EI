@@ -19,7 +19,8 @@ public class Command implements BCommand {
         if (success) {
             System.out.println(r.getName() + " booked at " + time + " for " + duration + " mins.");
         } else {
-            System.out.println(r.getName() + " is already booked at " + time);
+            System.out.println("Booking failed for " + r.getName() + " at " + time + ". Check time, capacity, or overlaps.");
         }
+
     }
 }

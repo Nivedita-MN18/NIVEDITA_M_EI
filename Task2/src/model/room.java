@@ -71,7 +71,6 @@ public class Room implements occupancySubject {
 
         public Room build() {
             Room r = new Room(id, name, maxCapacity);
-//            r.addOccupants();
             return r;
         }    }
 
